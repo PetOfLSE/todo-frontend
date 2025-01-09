@@ -5,24 +5,53 @@
         </header>
         <main>
             <div class="todo-list">
-                <div class="todo-element">
-                    <p class="todo-content">할 일 예시 1</p>
-                    <input type="checkbox" class="todo-completed">
+                <div class="todo-element" v-for="(element, index) in todoElement" :key="index">
+                    <p class="todo-content" :style="{ textDecoration: element.isComplete ? 'line-through' : 'none'}">{{ element.content }}</p>
+                    <div class="todo-content-helper">
+                        <input type="checkbox" class="todo-completed" v-model="element.isComplete">
+                        <button class="remove-todo-element" @click="removeTodo(index)"><i class="fa fa-trash"></i></button>
+                    </div>
                 </div>
+
             </div>
             
             <div class="todo-input-element">
-                <input type="text" class="input-todo-content">
-                <button class="add-todo-element"><i class="fa fa-arrow-up"></i></button>
-                <button class="remove-todo-element"><i class="fa fa-trash"></i></button>
+                <input type="text" class="input-todo-content" v-model="inputContent" @keydown.enter="addTodo" placeholder="할일을 입력하세요.">
+                <button class="add-todo-element" @click="addTodo"><i class="fa fa-arrow-up"></i></button>
             </div>
-            
+        
         </main>
     </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive } from 'vue';
 
+class Todo{
+    content: string;
+    isComplete: boolean;
+
+    constructor(content: string){
+        this.content = content;
+        this.isComplete = false;
+    }
+}
+
+let isCompleted = ref<boolean>(false);
+let inputContent = ref<string>('');
+
+let todoElement = reactive<Todo[]>([]);
+
+const addTodo = () => {
+    if(inputContent.value.trim() !== ''){
+        todoElement.push(new Todo(inputContent.value));
+        inputContent.value = '';
+    }
+}
+
+const removeTodo = (index: number) => {
+    todoElement.splice(index, 1);
+}
 </script>
 
 <style scoped>
@@ -60,8 +89,8 @@ main{
     flex-grow: 1;
 }
 .todo-element{
-    width: 900px;
-    height: 100px;
+    width: 850px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -80,13 +109,19 @@ main{
 .add-todo-element, .input-todo-content{
     margin-right: 10px;
 }
-.todo-completed{
-    margin-right: 50px;
-}
 .add-todo-element, .remove-todo-element{
     width: 30px;
     height: 30px;
+}
+.add-todo-element{
     border-radius: 50%;
     border: 1px solid black;
+}
+.remove-todo-element{
+    margin: 20px;
+    border: none;
+    border-radius: 50%;
+    background:black;
+    color: white;
 }
 </style>
