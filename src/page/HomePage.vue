@@ -5,11 +5,11 @@
         </header>
         <main>
             <div class="todo-list">
-                <div class="todo-element" v-for="(element, index) in todoElement" :key="index">
-                    <p class="todo-content" :style="{ textDecoration: element.isComplete ? 'line-through' : 'none'}">{{ element.content }}</p>
+                <div class="todo-element" v-for="element in todoElement" :key="element.id.toString()">
+                    <p class="todo-content" :style="{ textDecoration: element.completed ? 'line-through' : 'none'}">{{ element.content }}</p>
                     <div class="todo-content-helper">
-                        <input type="checkbox" class="todo-completed" v-model="element.isComplete">
-                        <button class="remove-todo-element" @click="removeTodo(index)"><i class="fa fa-trash"></i></button>
+                        <input type="checkbox" class="todo-completed" v-model="element.completed">
+                        <button class="remove-todo-element" @click="removeTodo(element.id)"><i class="fa fa-trash"></i></button>
                     </div>
                 </div>
 
@@ -25,33 +25,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
+import type Todo from '../types/Todo';
+import type TodoAdd from '../types/TodoAdd';
+import axios from 'axios';
 
-class Todo{
-    content: string;
-    isComplete: boolean;
-
-    constructor(content: string){
-        this.content = content;
-        this.isComplete = false;
-    }
-}
-
-let isCompleted = ref<boolean>(false);
 let inputContent = ref<string>('');
 
 let todoElement = reactive<Todo[]>([]);
 
-const addTodo = () => {
+const addTodo = async() => {
+    
     if(inputContent.value.trim() !== ''){
-        todoElement.push(new Todo(inputContent.value));
-        inputContent.value = '';
+        const todo: TodoAdd = {content: inputContent.value}
+        
+        try{
+            const response = await axios.post('http://localhost:8080/api/v1/todo/add', todo);
+            todoElement.push(response.data);
+            inputContent.value = '';
+        }catch(error){
+            console.error(error);
+        }
     }
 }
 
-const removeTodo = (index: number) => {
-    todoElement.splice(index, 1);
+const removeTodo = async (index: bigint) => {
+    try{
+        console.log(index);
+        const response = await axios.delete('http://localhost:8080/api/v1/todo/remove', {
+            params: {
+                todoId: index
+            }
+        })
+
+        const todoIndex: Number = todoElement.findIndex(todo => todo.id === index);
+        todoElement.splice(Number(todoIndex), 1);
+    }catch(error){
+        console.error(error);
+    }
 }
+
+onMounted(async () => {
+    try{
+        const response = await axios.get('http://localhost:8080/api/v1/todo/list');
+        console.log(...response.data.content);
+        todoElement.push(...response.data.content);
+    }catch(error){
+        console.error(error);
+    }
+})
 </script>
 
 <style scoped>
