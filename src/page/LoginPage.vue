@@ -4,6 +4,7 @@
       <h1>로그인</h1>
       <input type="email" class="input-field" placeholder="이메일을 입력하세요." v-model="email">
       <input type="password" class="input-field" placeholder="비밀번호를 입력하세요." v-model="password">
+      <a href="/register" class="register-link">회원가입</a>
       <button class="login-btn" @click="btnClick">로그인</button>
     </div>
   </div>
@@ -28,8 +29,8 @@ const btnClick = async (): Promise<void> => {
   }
 
   const data = {
-  email: email.value,
-  password: password.value
+    email: email.value,
+    password: password.value
   };
 
   try{
@@ -40,7 +41,7 @@ const btnClick = async (): Promise<void> => {
       alert('로그인에 성공하셨습니다.');
       window.location.href = '/';
     }
-  }catch(error){
+  } catch(error){
     console.error(error);
   }
 }
@@ -107,7 +108,15 @@ h1 {
   margin-top: 10px;
 }
 
-.register-btn:hover {
-  background-color: #2980b9;
+.register-link {
+  align-self: flex-start; 
+  font-size: 14px;
+  color: #3498db;
+  text-decoration: none;
+  margin-bottom: 15px;
+}
+
+.register-link:hover {
+  text-decoration: underline;
 }
 </style>
