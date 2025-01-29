@@ -1,7 +1,10 @@
 <template>
   <div class="container">
     <div class="todo-app">
-      <h1 class="todo-title">할 일 목록</h1>
+      <header class="todo-header">
+        <h1 class="todo-title">할 일 목록</h1>
+        <button @click="logout" class="logout-btn">로그아웃</button>
+      </header>
 
       <div class="todo-input">
         <input
@@ -30,76 +33,66 @@ import { ref, onMounted } from 'vue';
 import type { Todo } from '../type/Todo';
 import type { TodoAddData } from '../type/TodoAddData';
 import { list, add, toggle, del } from '../api/TodoApi';
-import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-const token = localStorage.getItem('access');
-
+const router = useRouter();
 const todos = ref<Todo[]>([]);
+const newTodo = ref('');
 
 const todoList = async (): Promise<void> => {
-  try{
+  try {
     const response = await list();
-
-    if(response && response.status === 200){
-      todos.value = response.data
+    if (response && response.status === 200) {
+      todos.value = response.data;
     }
-    
-  }catch(error){
+  } catch (error) {
     console.error(error);
   }
-}
+};
 
 onMounted(todoList);
 
-const newTodo = ref('');
-
 const addTodo = async (): Promise<void> => {
-
-  const data: TodoAddData = {
-    content: newTodo.value
-  };
-
-  try{
+  const data: TodoAddData = { content: newTodo.value };
+  try {
     const response = await add(data);
-
-    if(response && response.status === 200){
-      todos.value.push({ content: response.data.content, completed: response.data.completed, id: response.data.id});
-      newTodo.value = ''; 
+    if (response && response.status === 200) {
+      todos.value.push({ content: response.data.content, completed: response.data.completed, id: response.data.id });
+      newTodo.value = '';
     }
-
-  }catch(error){
+  } catch (error) {
     console.error(error);
   }
 };
 
 const toggleComplete = async (index: number) => {
   const todo = todos.value[index];
-  const todoId = todo.id;
-
-  try{
-    const response = await toggle(todoId);
-
-    if(response && response.status === 200){
+  try {
+    const response = await toggle(todo.id);
+    if (response && response.status === 200) {
       todos.value[index] = response.data;
     }
-  }catch(error){
+  } catch (error) {
     console.error(error);
   }
 };
 
 const deleteTodo = async (index: number) => {
   const todo = todos.value[index];
-  const todoId = todo.id;
-
-  try{
-    const response = await del(todoId);
-
-    if(response && response.status === 200){
+  try {
+    const response = await del(todo.id);
+    if (response && response.status === 200) {
       todos.value = response.data.todo;
     }
-  }catch(error){
+  } catch (error) {
     console.error(error);
   }
+};
+
+const logout = () => {
+  localStorage.removeItem('access');
+  localStorage.removeItem('refresh');
+  router.push('/login');
 };
 </script>
 
@@ -122,11 +115,29 @@ const deleteTodo = async (index: number) => {
   max-width: 400px;
 }
 
-.todo-title {
-  text-align: center;
-  font-size: 24px;
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.todo-title {
+  font-size: 24px;
   color: #333;
+}
+
+.logout-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #c0392b;
 }
 
 .todo-input {
