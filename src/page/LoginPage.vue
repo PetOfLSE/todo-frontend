@@ -14,7 +14,7 @@
 import {ref} from 'vue';
 import { login } from '../api/AuthApi';
 import axios from 'axios';
-import type { LoginData } from '../type/LoginData';
+import type { LoginData } from '../type/ILoginData';
 
 let email = ref('');
 let password = ref('');

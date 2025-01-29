@@ -1,6 +1,6 @@
 import axios from 'axios';
-import type { RegisterData } from '@/type/RegisterData';
-import type { LoginData } from '@/type/LoginData';
+import type { RegisterData } from '@/type/IRegisterData';
+import type { LoginData } from '@/type/ILoginData';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
