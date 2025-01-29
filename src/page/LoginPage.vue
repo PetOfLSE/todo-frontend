@@ -38,6 +38,7 @@ const btnClick = async (): Promise<void> => {
       localStorage.setItem('access', response.data.jwtResponse.accessToken);
       localStorage.setItem('refresh', response.data.jwtResponse.refreshToken);
       alert('로그인에 성공하셨습니다.');
+      window.location.href = '/';
     }
   }catch(error){
     console.error(error);
