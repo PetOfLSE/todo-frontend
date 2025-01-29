@@ -11,13 +11,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
+import axios from 'axios';
 
 let nickname = ref('');
 let email = ref('');
 let password = ref('');
 
-const btnClick = (): void => {
+const btnClick = async (): Promise<void> => {
   if(nickname.value.trim() === ''){
     alert('닉네임은 필수 입력값입니다.');
     return;
@@ -33,9 +34,23 @@ const btnClick = (): void => {
     return;
   }
 
-  console.log(nickname.value);
-  console.log(password.value);
-  console.log(email.value);
+  const data = {
+    nickname: nickname.value,
+    email: email.value,
+    password: password.value
+  };
+
+  try{
+    const response = await axios.post('http://localhost:8080/api/v1/auth/register', data);
+    if(response.status === 200){
+      alert('회원가입이 성공적으로 완료되었습니다.');
+      window.location.href = '/login';
+    }
+  }catch(error){
+    alert('회원가입에 실패하였습니다.');
+    console.error(error);
+  }
+  
 }
 </script>
 
