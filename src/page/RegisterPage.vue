@@ -12,40 +12,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import axios from 'axios';
+import { register } from '../api/AuthApi';
+import type { RegisterData } from '../type/RegisterData';
 
 let nickname = ref('');
 let email = ref('');
 let password = ref('');
 
 const btnClick = async (): Promise<void> => {
-  if(nickname.value.trim() === ''){
-    alert('닉네임은 필수 입력값입니다.');
-    return;
-  }
 
-  if(email.value.trim() === ''){
-    alert('이메일은 필수 입력값입니다.');
-    return;
-  }
-
-  if(password.value.trim() === ''){
-    alert('비밀번호는 필수 입력값입니다.');
-    return;
-  }
-
-  const data = {
+  const data: RegisterData = {
     nickname: nickname.value,
     email: email.value,
     password: password.value
   };
 
   try{
-    const response = await axios.post('http://localhost:8080/api/v1/auth/register', data);
-    if(response.status === 200){
-      alert('회원가입이 성공적으로 완료되었습니다.');
-      window.location.href = '/login';
-    }
+    const response = await register(data);
+    alert('회원가입에 성공하였습니다.');
+    window.location.href = '/login';
   }catch(error){
     alert('회원가입에 실패하였습니다.');
     console.error(error);
