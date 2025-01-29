@@ -30,8 +30,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import type { Todo } from '../type/Todo';
-import type { TodoAddData } from '../type/TodoAddData';
+import type { Todo } from '../type/ITodo';
+import type { TodoAddData } from '../type/ITodoAddData';
 import { list, add, toggle, del } from '../api/TodoApi';
 import { useRouter } from 'vue-router';
 
