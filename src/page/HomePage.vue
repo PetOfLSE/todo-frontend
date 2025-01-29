@@ -28,6 +28,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import type { Todo } from '../type/Todo';
+import type { TodoAddData } from '../type/TodoAddData';
+import { list, add, toggle, del } from '../api/TodoApi';
 import axios from 'axios';
 
 const token = localStorage.getItem('access');
@@ -36,13 +38,12 @@ const todos = ref<Todo[]>([]);
 
 const todoList = async (): Promise<void> => {
   try{
-    const response = await axios.get('http://localhost:8080/api/v1/todo/list', {
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await list();
 
-    todos.value = response.data
+    if(response && response.status === 200){
+      todos.value = response.data
+    }
+    
   }catch(error){
     console.error(error);
   }
@@ -53,29 +54,18 @@ onMounted(todoList);
 const newTodo = ref('');
 
 const addTodo = async (): Promise<void> => {
-  if (newTodo.value.trim() === '') {
-    alert('입력란이 비어있습니다.');
-    return;
-  }
 
-  const data = {
+  const data: TodoAddData = {
     content: newTodo.value
   };
 
   try{
-    const response = await axios.post(
-      'http://localhost:8080/api/v1/todo/add', 
-      data,
-      {
-        headers:{
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-    console.log(response.data);
+    const response = await add(data);
 
-    todos.value.push({ content: response.data.content, completed: response.data.completed, id: response.data.id});
-    newTodo.value = ''; 
+    if(response && response.status === 200){
+      todos.value.push({ content: response.data.content, completed: response.data.completed, id: response.data.id});
+      newTodo.value = ''; 
+    }
 
   }catch(error){
     console.error(error);
@@ -87,19 +77,11 @@ const toggleComplete = async (index: number) => {
   const todoId = todo.id;
 
   try{
-    const response = await axios.get(
-      'http://localhost:8080/api/v1/todo/complete', 
-      {
-        params: {
-          todoId: todoId
-        },
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    const response = await toggle(todoId);
 
-    todos.value[index] = response.data;
+    if(response && response.status === 200){
+      todos.value[index] = response.data;
+    }
   }catch(error){
     console.error(error);
   }
@@ -110,17 +92,9 @@ const deleteTodo = async (index: number) => {
   const todoId = todo.id;
 
   try{
-    const response = await axios.delete('http://localhost:8080/api/v1/todo/delete', {
-      params: {
-        todoId: todoId
-      },
-      headers:{
-        Authorization: `Bearer ${token}`
-      }
-    });
+    const response = await del(todoId);
 
-    if(response.status === 200){
-      console.log(response.data.todo);
+    if(response && response.status === 200){
       todos.value = response.data.todo;
     }
   }catch(error){
