@@ -12,33 +12,24 @@
 
 <script setup lang="ts">
 import {ref} from 'vue';
+import { login } from '../api/AuthApi';
 import axios from 'axios';
+import type { LoginData } from '../type/LoginData';
 
 let email = ref('');
 let password = ref('');
 
 const btnClick = async (): Promise<void> => {
-  if(email.value.trim() === ''){
-    alert('이메일은 필수 입력값입니다.');
-    return;
-  }
 
-  if(password.value.trim() === ''){
-    alert('비밀번호는 필수 입력값입니다.');
-    return;
-  }
-
-  const data = {
+  const data: LoginData = {
     email: email.value,
     password: password.value
   };
 
   try{
-    const response = await axios.post('http://localhost:8080/api/v1/auth/login', data);
-    if(response.status === 200){
-      localStorage.setItem('access', response.data.jwtResponse.accessToken);
-      localStorage.setItem('refresh', response.data.jwtResponse.refreshToken);
-      alert('로그인에 성공하셨습니다.');
+    const response = await login(data);
+    if(response && response.status === 200){
+      alert('로그인에 성공하였습니다.');
       window.location.href = '/';
     }
   } catch(error){
