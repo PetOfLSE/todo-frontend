@@ -8,7 +8,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('access');
-  if(to.path !== '/login' && !token){
+  if(to.path === '/login' || to.path === '/register'){
+    next();
+  }else if(!token){
     next('/login');
   }else{
     next();
