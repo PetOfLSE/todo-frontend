@@ -1,13 +1,112 @@
 <template>
-  <div>
-    Login Page
+  <div class="container">
+    <div class="login-element">
+      <h1>로그인</h1>
+      <input type="email" class="input-field" placeholder="이메일을 입력하세요." v-model="email">
+      <input type="password" class="input-field" placeholder="비밀번호를 입력하세요." v-model="password">
+      <button class="login-btn" @click="btnClick">로그인</button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import {ref} from 'vue';
+import axios from 'axios';
 
+let email = ref('');
+let password = ref('');
+
+const btnClick = async (): Promise<void> => {
+  if(email.value.trim() === ''){
+    alert('이메일은 필수 입력값입니다.');
+    return;
+  }
+
+  if(password.value.trim() === ''){
+    alert('비밀번호는 필수 입력값입니다.');
+    return;
+  }
+
+  const data = {
+  email: email.value,
+  password: password.value
+  };
+
+  try{
+    const response = await axios.post('http://localhost:8080/api/v1/auth/login', data);
+    if(response.status === 200){
+      localStorage.setItem('access', response.data.jwtResponse.accessToken);
+      localStorage.setItem('refresh', response.data.jwtResponse.refreshToken);
+      alert('로그인에 성공하셨습니다.');
+    }
+  }catch(error){
+    console.error(error);
+  }
+}
 </script>
 
 <style scoped>
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #eef2f3;
+  font-family: 'Roboto', sans-serif;
+}
 
+.login-element {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.input-field {
+  width: 100%;
+  height: 40px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 0 10px;
+  font-size: 14px;
+  background-color: #fafafa;
+}
+
+.input-field:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.login-btn {
+  width: 100%;
+  height: 45px;
+  background-color: #3498db;
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.register-btn:hover {
+  background-color: #2980b9;
+}
 </style>
