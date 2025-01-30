@@ -34,6 +34,7 @@ import type { Todo } from '../type/Todo';
 import type { TodoAddData } from '../type/TodoAddData';
 import { list, add, toggle, del } from '../api/TodoApi';
 import { useRouter } from 'vue-router';
+import { todoAddValidator } from '../util/ValidatorUtil';
 
 const router = useRouter();
 const todos = ref<Todo[]>([]);
@@ -54,6 +55,11 @@ onMounted(todoList);
 
 const addTodo = async (): Promise<void> => {
   const data: TodoAddData = { content: newTodo.value };
+
+  if(!todoAddValidator(data)){
+    return;
+  }
+
   try {
     const response = await add(data);
     if (response && response.status === 200) {
