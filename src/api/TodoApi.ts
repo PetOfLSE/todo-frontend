@@ -25,11 +25,6 @@ export const list = async () => {
 
 export const add = async (data: TodoAddData) => {
 
-  if (data.content.trim() === '') {
-    alert('입력란이 비어있습니다.');
-    return;
-  }
-
   try{
     const response = await axios.post(`${API_URL}/todo/add`, data, {
       headers: {
