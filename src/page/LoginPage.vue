@@ -4,7 +4,7 @@
       <h1>로그인</h1>
       <input type="email" class="input-field" placeholder="이메일을 입력하세요." v-model="email">
       <input type="password" class="input-field" placeholder="비밀번호를 입력하세요." v-model="password">
-      <a href="/register" class="register-link">회원가입</a>
+      <p @click="moveRegister" class="register-link">회원가입</p>
       <button class="login-btn" @click="btnClick">로그인</button>
     </div>
   </div>
@@ -39,6 +39,10 @@ const btnClick = async (): Promise<void> => {
   } catch(error){
     console.error(error);
   }
+}
+
+const moveRegister = () => {
+  window.location.href = '/register';
 }
 </script>
 
