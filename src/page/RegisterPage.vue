@@ -14,6 +14,7 @@
 import { ref } from 'vue';
 import { register } from '../api/AuthApi';
 import type { RegisterData } from '../type/RegisterData';
+import { registerValidator } from '../util/ValidatorUtil';
 
 let nickname = ref('');
 let email = ref('');
@@ -26,6 +27,10 @@ const btnClick = async (): Promise<void> => {
     email: email.value,
     password: password.value
   };
+
+  if(!registerValidator(data)){
+    return;
+  }
 
   try{
     const response = await register(data);
