@@ -13,8 +13,8 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import { login } from '../api/AuthApi';
-import axios from 'axios';
 import type { LoginData } from '../type/ILoginData';
+import { loginValidator } from '../util/ValidatorUtil';
 
 let email = ref('');
 let password = ref('');
@@ -25,6 +25,10 @@ const btnClick = async (): Promise<void> => {
     email: email.value,
     password: password.value
   };
+
+  if(!loginValidator(data)){
+    return;
+  }
 
   try{
     const response = await login(data);
